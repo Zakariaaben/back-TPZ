@@ -2,13 +2,13 @@
 const express = require('express');
 const cors = require('cors');
 
-
-
-
 // Initializing express app
 const app = express();
-const PORT = 3000;
+const PORT = 3002;
+
+// Enable CORS
 app.use(cors());
+
 // Body parsing middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -34,5 +34,5 @@ app.post('/update', (req, res) => {
 
 // Starting the server
 app.listen(PORT, () => {
-  console.log(`Server is running on https://graph-tp.vercel.app/${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
