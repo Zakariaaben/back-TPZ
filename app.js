@@ -34,5 +34,5 @@ app.post('/update', (req, res) => {
 
 // Starting the server
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on https://graph-tp.vercel.app/${PORT}`);
 });
