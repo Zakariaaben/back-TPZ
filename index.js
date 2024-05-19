@@ -16,6 +16,12 @@ app.use(express.urlencoded({ extended: true }));
 // Initial data
 let data = "Initial Content";
 
+
+
+app.get('/', (req, res) => {
+  res.send('Hello World')
+})
+
 // GET endpoint to retrieve data
 app.get('/data', (req, res) => {
   res.send(data);
