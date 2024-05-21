@@ -2,6 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer'); // Import multer for handling file uploads
+const fs = require('fs'); // Import fs for file system operations
 
 // Initializing express app
 const app = express();
@@ -14,15 +15,21 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Ensure 'uploads' directory exists
+const uploadDir = 'uploads/';
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
+
 // Configure multer for handling file uploads
-const upload = multer({ dest: 'uploads/' }); // Destination folder for uploaded files
+const upload = multer({ dest: uploadDir }); // Destination folder for uploaded files
 
 // Initial data
 let data = "Initial Content";
 
 // GET endpoint to retrieve data
 app.get('/', (req, res) => {
-  res.send('Hello World')
+  res.send('Hello World');
 });
 
 app.get('/data', (req, res) => {
@@ -33,9 +40,14 @@ app.get('/data', (req, res) => {
 // Accepts JSON or TXT files
 app.post('/update', upload.single('file'), (req, res) => {
   if (req.file) {
-    // If a file is uploaded, update data with its content
-    data = req.file.buffer.toString(); // Convert buffer to string
-    res.send('Data updated successfully');
+    // If a file is uploaded, read its content and update data
+    fs.readFile(req.file.path, 'utf8', (err, fileContent) => {
+      if (err) {
+        return res.status(500).send('Error reading the uploaded file');
+      }
+      data = fileContent;
+      res.send('Data updated successfully');
+    });
   } else if (req.body.content) {
     // If JSON data is provided in the request body, update data with it
     const newData = req.body.content;
