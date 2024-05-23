@@ -1,61 +1,28 @@
-// Importing necessary modules
 const express = require('express');
-const cors = require('cors');
-const multer = require('multer');
-const fs = require('fs');
-const path = require('path');
-
-// Initializing express app
 const app = express();
-const PORT = 3002;
+const PORT = 3000;
 
-// Enable CORS
-app.use(cors());
+// Stockage temporaire des données reçues
+let donneesRecues = "";
 
-// Body parsing middleware for JSON
-app.use(express.json());
+app.use(express.text());
 
-// Set up multer for file uploads
-const upload = multer({ dest: 'uploads/' });
-
-// Initial data
-let data = "Initial Content";
-
-// Default route
-app.get('/', (req, res) => {
-  res.send('Hello World');
+// Route pour recevoir et stocker les données
+app.post('/', (req, res) => {
+  donneesRecues = req.body; // Stocker le contenu reçu
+  console.log('Contenu reçu :', donneesRecues);
+  res.send('Contenu du fichier reçu avec succès !');
 });
 
-// GET endpoint to retrieve data
+// Route pour afficher les données stockées
 app.get('/data', (req, res) => {
-  res.send(data);
-});
-
-// POST endpoint to update data with file upload
-app.post('/update', upload.single('file'), (req, res) => {
-  if (req.file) {
-    const filePath = path.join(__dirname, req.file.path);
-    fs.readFile(filePath, 'utf8', (err, fileContent) => {
-      if (err) {
-        return res.status(500).send('Server error: Unable to read file');
-      }
-      data = fileContent;
-      fs.unlink(filePath, (err) => {
-        if (err) {
-          return res.status(500).send('Server error: Unable to delete file');
-        }
-        res.send('Data updated successfully');
-      });
-    });
-  } else {
-    res.status(400).send('Bad request: No file provided');
+  if (!donneesRecues) {
+    return res.status(404).send("Aucun contenu disponible.");
   }
+  res.type('text/plain');
+  res.send(donneesRecues);
 });
 
-// Starting the server
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Serveur en écoute sur le port localhost:${PORT}.`);
 });
-
-
-module.exports = app;
