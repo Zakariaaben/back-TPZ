@@ -1,11 +1,14 @@
 const express = require('express');
 const app = express();
-const PORT = 3000;
+const cors  = require('cors')
+
 
 // Stockage temporaire des données reçues
 let donneesRecues = "";
 
 app.use(express.text());
+app.use(cors());
+
 
 // Route pour recevoir et stocker les données
 app.post('/', (req, res) => {
@@ -23,6 +26,5 @@ app.get('/data', (req, res) => {
   res.send(donneesRecues);
 });
 
-app.listen(PORT, () => {
-  console.log(`Serveur en écoute sur le port localhost:${PORT}.`);
-});
+
+module.exports  = app;
