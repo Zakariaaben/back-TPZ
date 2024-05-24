@@ -1,30 +1,33 @@
 const express = require('express');
 const app = express();
-const cors  = require('cors')
+const cors = require('cors');
 
-
-// Stockage temporaire des données reçues
-let donneesRecues = "";
+// Array to store received data, limited to 10 entries
+let donneesRecues = [];
+const MAX_ENTRIES = 10;
 
 app.use(express.text());
 app.use(cors());
 
-
-// Route pour recevoir et stocker les données
+// Route for receiving and storing data
 app.post('/', (req, res) => {
-  donneesRecues = req.body; // Stocker le contenu reçu
-  console.log('Contenu reçu :', donneesRecues);
-  res.send('Contenu du fichier reçu avec succès !');
+  if (donneesRecues.length >= MAX_ENTRIES) {
+    donneesRecues.shift(); // Remove the oldest entry if limit is reached
+  }
+  donneesRecues.push(req.body); // Store the received content
+  const index = donneesRecues.length; // Get the one-based index
+  console.log(`Contenu reçu à l'index ${index} :`, req.body);
+  res.send(`Contenu du fichier reçu avec succès à l'index ${index} !`);
 });
 
-// Route pour afficher les données stockées
-app.get('/data', (req, res) => {
-  if (!donneesRecues) {
-    return res.status(404).send("Aucun contenu disponible.");
+// Route for displaying stored data
+app.get('/data/:i', (req, res) => {
+  const index = parseInt(req.params.i, 10);
+  if (isNaN(index) || index < 1 || index > donneesRecues.length) {
+    return res.status(404).send("Aucun contenu disponible pour cet index.");
   }
   res.type('text/plain');
-  res.send(donneesRecues);
+  res.send(donneesRecues[index - 1]); // Adjust for one-based index
 });
 
-
-module.exports  = app;
+module.exports = app;
