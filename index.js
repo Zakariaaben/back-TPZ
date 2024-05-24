@@ -17,7 +17,7 @@ app.post('/', (req, res) => {
   donneesRecues.push(req.body); // Store the received content
   const index = donneesRecues.length; // Get the one-based index
   console.log(`Contenu reçu à l'index ${index} :`, req.body);
-  res.send(`Contenu du fichier reçu avec succès à l'index ${index} !`);
+  res.send(` - Contenu du fichier reçu avec succès !`);
 });
 
 // Route for displaying stored data
